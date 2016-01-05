@@ -1,0 +1,14 @@
+{
+	"files" : {
+		"scripts"        : "app/assets/scripts/*.js",
+		"styles"         : "app/assets/styles/style.scss",
+		"watchStyles"    : "app/assets/styles/**/*.scss",
+		"images"         : "app/assets/images/**/*",
+		"copy"           : "app/assets/copy/**/*",
+		"copyBase"       : "app/assets/copy"
+	},
+
+	"minifyImages" : true,
+	"autoReload": true,
+	"publicDirectory" : "public/"
+}
