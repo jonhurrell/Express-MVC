@@ -2,6 +2,8 @@
 	"files" : {
 		"scripts"        : "app/assets/scripts/*.js",
 		"styles"         : "app/assets/styles/style.scss",
+		"stylesMap"      : "maps/",
+		"nodeModules"    : "node_modules/",
 		"watchStyles"    : "app/assets/styles/**/*.scss",
 		"images"         : "app/assets/images/**/*",
 		"copy"           : "app/assets/copy/**/*",
@@ -10,5 +12,6 @@
 
 	"minifyImages" : true,
 	"autoReload": true,
+	"sourceMaps": false,
 	"publicDirectory" : "public/"
 }

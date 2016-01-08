@@ -20,7 +20,8 @@ var nodemon            = require('gulp-nodemon'),
 	plumber            = require('gulp-plumber'),
 	del                = require('del'),
 	runsequence        = require('run-sequence'),
-	stylish            = require('jshint-stylish');
+	stylish            = require('jshint-stylish'),
+	importOnce         = require('node-sass-import-once');
 
 // Plugin requires.
 
@@ -30,7 +31,8 @@ var concat             = require('gulp-concat'),
 	rename             = require('gulp-rename'),
 	sass               = require('gulp-sass'),
 	autoprefixer       = require('gulp-autoprefixer'),
-	minifycss          = require('gulp-minify-css'),
+	nano               = require('gulp-cssnano'),
+	sourcemaps         = require('gulp-sourcemaps'),
 	livereload         = require('gulp-livereload'),
 	scsslint           = require('gulp-scss-lint'),
 	imagemin           = require('gulp-imagemin'),
@@ -52,7 +54,7 @@ var config             = require('./gulp-config.json'),
 // ---------------------------------------
 // 1. Setup the error notification.
 // 2. Log error to console.
-// 3. Let gulp know to end the task that errored and not to break
+// 3. Let gulp know to end the task that errors and not to break
 //    the run (forcing you to restart gulp).
 
 function errorAlert(err) {
@@ -72,7 +74,7 @@ function errorAlert(err) {
 // version in public/js.
 // ---------------------------------------
 // 1. Assign our output directory to a variable.
-// 2. Use all files defined in files.scripts config.
+// 2. Use all files defined by files.scripts within config.
 // 3. Pipe the readable stream through gulp-plumber, which prevents pipe
 //    breaking caused by errors from gulp plugins (replaces pipe method
 //    and removes standard onerror handler on errors event, which unpipes
@@ -106,41 +108,58 @@ gulp.task('scripts', function() {
 
 
 // Styles build task ---------------------
-// Compiles CSS from SASS, auto-prefixes and outputs both a
-// minified and non-minified version into /public/css.
+// Compiles CSS from Sass, auto-prefixes and optionally outputs a source map,
+// which allows you to edit your Sass directly within DevTools.
+// Output both a minified and non-minified version into /public/css.
 // ---------------------------------------
 // 1. Assign our output directory to a variable.
-// 2. Using all files defined in files.styles config.
+// 2. Using all files defined by files.styles within config.
 // 3. Pipe the readable stream through gulp-plumber, which prevents pipe
 //    breaking caused by errors from gulp plugins (replaces pipe method
 //    and removes standard onerror handler on errors event, which unpipes
 //    streams on error by default). Pass in our errorAlert function
 //    to the onerror handler.
-// 4. Pipe stream through scsslint.
-// 5. Compile using SASS, expanded style.
-// 6. Auto-prefix (e.g. -moz-) using last 2 browser versions.
-// 7. Output prefixed but non-minifed CSS to public/css
-// 8. Rename to .min.css
-// 9. Minify the CSS.
-// 10. Output prefixed, minified CSS to public/css.
+// 4. Conditionally initialise sourcemaps (if sourceMaps == true within config).
+// 5. Pipe stream through scsslint.
+// 5. Compile using Sass, expanded style.
+// 6. Include and compile any Sass partials defined by files.nodeModules
+//    within config.
+// 7. Prevent styles from being duplicated if a Sass partial declares it's
+//    own dependencies (encapsulation) using the @import directive.
+// 8. Auto-prefix (e.g. -moz-) using last 2 browser versions.
+// 9.Conditionally pipe stream through sourcemaps (if sourceMaps == true within config)
+//    and write out a source map to the directory defined by files.styleMap
+//    within config.
+// 10.Output prefixed but non-minifed CSS to public/css
+// 11.Rename to .min.css
+// 12.Minify the CSS.
+// 13.Conditionally write sourcemaps (if sourceMaps == true within config)
+//    to the directory defined by files.styleMap within config.
+//    Bug in DevTools that prevents it from using the source map:
+//    https://github.com/terinjokes/gulp-uglify/issues/105#issuecomment-160292080
+// 14.Output prefixed, minified CSS to public/css.
 
 gulp.task('styles', function() {
 
-	var outputDirectory = publicDirectory + 'css/' // [1]
+	var outputDirectory = publicDirectory + 'css/';                // [1]
 
-	return gulp.src(config.files.styles)           // [2]
-		.pipe(plumber({errorHandler: errorAlert})) // [3]
-		.pipe(scsslint({                           // [4]
+	return gulp.src(config.files.styles)                           // [2]
+		.pipe(plumber({errorHandler: errorAlert}))                 // [3]
+		.pipe(gulpif(config.sourceMaps, sourcemaps.init()))        // [4]
+		.pipe(scsslint({                                           // [5]
 			'config': '.scss-lint.yml'
  		}))
-		.pipe(sass({                               // [5]
-			style : 'expanded'
+		.pipe(sass({                                               // [6]
+			style : 'expanded',
+			includePaths: [config.files.nodeModules],              // [7]
+			importer: importOnce                                   // [8]
 		}))
-		.pipe(autoprefixer('last 2 versions'))     // [6]
-		.pipe(gulp.dest(outputDirectory))          // [7]
-		.pipe(rename({ suffix : '.min' }))         // [8]
-		.pipe(minifycss())                         // [9]
-		.pipe(gulp.dest(outputDirectory));         // [10]
+		.pipe(autoprefixer('last 2 versions'))                     // [9]
+		.pipe(gulp.dest(outputDirectory))                          // [10]
+		.pipe(rename({ suffix : '.min' }))                         // [11]
+		.pipe(nano())                                              // [12]
+		.pipe(gulpif(config.sourceMaps, sourcemaps.write(config.files.stylesMap)))  // [13]
+		.pipe(gulp.dest(outputDirectory));                         // [14]
 
 });
 
@@ -153,17 +172,16 @@ gulp.task('styles', function() {
 // Outputs a minified version into /public/images.
 // ---------------------------------------
 // 1. Assign our output directory to a variable.
-// 2. Conditionally pipe stream through imagemin (if in config
-//    var minifyImages == true).
+// 2. Use files defined in files.images config.
 // 3. Pipe the readable stream through gulp-plumber, which prevents pipe
 //    breaking caused by errors from gulp plugins (replaces pipe method
 //    and removes standard onerror handler on errors event, which unpipes
 //    streams on error by default). Pass in our errorAlert function
 //    to the onerror handler.
-// 4. Determine whether to use imagemin or do nothing (noop).
-// 5. Use files defined in files.images config.
-// 6. Filter to only images that are newer than within public/images.
-// 7. Output optimised images to public/images.
+// 4. Conditionally pipe stream through imagemin (if minifyImages == true
+//    within config).
+// 5. Filter to only images that are newer than within public/images.
+// 6. Output optimised images to public/images.
 
 gulp.task('images', function() {
 
@@ -189,15 +207,18 @@ gulp.task('images', function() {
 // Sets up several watchers. Using different config for styles and
 // templates as they have partials that need watching but not compiling.
 // ---------------------------------------
-// 1. Any changes to any files from files.watchStyles config starts styles task.
-// 2. Any changes to any files from files.scripts config starts scripts task.
-// 3. Any changes to any files from files.images config starts images task.
+// 1. Any changes to any files defined by files.watchStyles within config
+//    starts styles task.
+// 2. Any changes to any files defined by files.scripts within config
+//    starts scripts task.
+// 3. Any changes to any files defined by files.images within config
+//    starts images task.
 
 gulp.task('watch', function() {
 
-	gulp.watch(config.files.watchStyles, ['styles']);	// [1]
-	gulp.watch(config.files.scripts, ['scripts']);      // [2]
-	gulp.watch(config.files.images, ['images']);        // [3]
+	gulp.watch(config.files.watchStyles, ['styles']);              // [1]
+	gulp.watch(config.files.scripts, ['scripts']);                 // [2]
+	gulp.watch(config.files.images, ['images']);                   // [3]
 
 });
 
