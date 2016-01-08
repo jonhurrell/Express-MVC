@@ -19,6 +19,28 @@ var nunjucks          = require('nunjucks'),
 // Let's export the setup function to utilise in other files (app.js).
 module.exports = function(app, config) {
 
+	// Local variables -----------------------
+	// Access local variables in templates rendered within the application.
+	// This is useful for providing helper functions to templates, as well
+	// as app-level data.
+	// ---------------------------------------
+	// 1. Create a local variable, available to all templates, that checks
+	//    if the environment value set by config.env evaluates to development.
+	//    An example of use, would allow us to serve different assets based
+	//    on environment, e.g.:
+	//
+	//    {% if isDevelopment %}
+	//	      <link rel="stylesheet" href="/css/style.css">
+	//    {% else %}
+	//	      <link rel="stylesheet" href="/css/style.min.css">
+	//    {% endif %}
+	//
+	app.locals.isDevelopment = (config.env === 'development');          // [1]
+
+
+
+
+
 	// Setup views ---------------------------
 	// The app uses nunjucks as the template engine.
 	// nunjucks loads templates from the filesystem by default, and loads
@@ -45,6 +67,7 @@ module.exports = function(app, config) {
 	// files, we use the express.static built-in middleware function
 	// in Express.
 	app.use(express.static(config.root + '/public'));
+
 
 
 

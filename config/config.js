@@ -4,6 +4,7 @@ var path     = require('path'),
 	rootPath = path.normalize(__dirname + '/..');
 
 var config = {
+	    env: process.env.NODE_ENV,
 		root: rootPath,
 		port: process.env.PORT,
 		livereloadPort : 35729,
