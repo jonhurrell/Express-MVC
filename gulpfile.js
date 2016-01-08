@@ -54,7 +54,7 @@ var config             = require('./gulp-config.json'),
 // ---------------------------------------
 // 1. Setup the error notification.
 // 2. Log error to console.
-// 3. Let gulp know to end the task that errored and not to break
+// 3. Let gulp know to end the task that errors and not to break
 //    the run (forcing you to restart gulp).
 
 function errorAlert(err) {
@@ -74,7 +74,7 @@ function errorAlert(err) {
 // version in public/js.
 // ---------------------------------------
 // 1. Assign our output directory to a variable.
-// 2. Use all files defined in files.scripts config.
+// 2. Use all files defined by files.scripts within config.
 // 3. Pipe the readable stream through gulp-plumber, which prevents pipe
 //    breaking caused by errors from gulp plugins (replaces pipe method
 //    and removes standard onerror handler on errors event, which unpipes
@@ -172,17 +172,16 @@ gulp.task('styles', function() {
 // Outputs a minified version into /public/images.
 // ---------------------------------------
 // 1. Assign our output directory to a variable.
-// 2. Conditionally pipe stream through imagemin (if in config
-//    var minifyImages == true).
+// 2. Use files defined in files.images config.
 // 3. Pipe the readable stream through gulp-plumber, which prevents pipe
 //    breaking caused by errors from gulp plugins (replaces pipe method
 //    and removes standard onerror handler on errors event, which unpipes
 //    streams on error by default). Pass in our errorAlert function
 //    to the onerror handler.
-// 4. Determine whether to use imagemin or do nothing (noop).
-// 5. Use files defined in files.images config.
-// 6. Filter to only images that are newer than within public/images.
-// 7. Output optimised images to public/images.
+// 4. Conditionally pipe stream through imagemin (if minifyImages == true
+//    within config).
+// 5. Filter to only images that are newer than within public/images.
+// 6. Output optimised images to public/images.
 
 gulp.task('images', function() {
 
@@ -208,15 +207,18 @@ gulp.task('images', function() {
 // Sets up several watchers. Using different config for styles and
 // templates as they have partials that need watching but not compiling.
 // ---------------------------------------
-// 1. Any changes to any files from files.watchStyles config starts styles task.
-// 2. Any changes to any files from files.scripts config starts scripts task.
-// 3. Any changes to any files from files.images config starts images task.
+// 1. Any changes to any files defined by files.watchStyles within config
+//    starts styles task.
+// 2. Any changes to any files defined by files.scripts within config
+//    starts scripts task.
+// 3. Any changes to any files defined by files.images within config
+//    starts images task.
 
 gulp.task('watch', function() {
 
-	gulp.watch(config.files.watchStyles, ['styles']);	// [1]
-	gulp.watch(config.files.scripts, ['scripts']);      // [2]
-	gulp.watch(config.files.images, ['images']);        // [3]
+	gulp.watch(config.files.watchStyles, ['styles']);              // [1]
+	gulp.watch(config.files.scripts, ['scripts']);                 // [2]
+	gulp.watch(config.files.images, ['images']);                   // [3]
 
 });
 
