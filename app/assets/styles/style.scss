@@ -1,4 +1,67 @@
 // style.scss ----------------------------
-// This is a starting point where we call
-// all of our Sass partials
+// This is a starting point where we call all of our Sass partials
+// We can import our own partials in the relevant locations/layers.
+// We name them in the _<layer>.<file>.scss format.
+// This stylesheet is organised in shearing layers—a concept coined by
+// architect Frank Duffy which was later elaborated by Stewart Brand in his
+// book How Buildings Learn: What Happens After They’re Built (Brand, 1994),
+// and refers to buildings as composed of several layers of change.
+// ---------------------------------------
+// The concept of Shearing Layers can be adopted to architect CSS into
+// layers of decreasing scope (inverted pyramid):
+// 1.  Settings: Sass vars, etc.
+// 2.  Tools: Functions and mixins.
+// 3.  Generic: Generic, high-level styling, like resets, etc.
+// 4.  Base: Unclasses HTML elements (e.g. `h2`, `ul`).
+// 5.  Object: Objects and abstractions.
+// 6.  Components: Your designed UI elements (inuitcss includes none of these).
+// 7.  Trumps: Overrides and helper classes.
+
+
+
+
+
+// Settings ------------------------------
+// ---------------------------------------
+
+
+
+
+
+// Tools----------------------------------
+// ---------------------------------------
+
+
+
+
+
+// Generic -------------------------------
+// ---------------------------------------
+
+
+
+
+
+// Base ----------------------------------
+// ---------------------------------------
+
+
+
+
+
+// Objects -------------------------------
+// ---------------------------------------
+
+
+
+
+
+// Components ----------------------------
+// ---------------------------------------
+
+
+
+
+
+// Trumps --------------------------------
 // ---------------------------------------
