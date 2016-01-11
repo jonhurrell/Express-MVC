@@ -120,6 +120,24 @@ module.exports = function(app, config) {
 
 
 
+	// Setup controllers ---------------------
+	// The controller files contain the routes, routing middlewares,
+	// business logic, template rendering and dispatching.
+	// ---------------------------------------
+	// 1. Perform a synchronous glob (pattern match) search on any JavaScript
+	//    files in /app/controllers.
+	// 2. Loop through the controllers directory and require each controller
+	//    file within it, passing in the express app.
+
+	var controllers = glob.sync(config.root + '/app/controllers/*.js');  // [1]
+	controllers.forEach(function (controller) {                          // [2]
+		require(controller)(app);
+	});
+
+
+
+
+
 	// Utilities -----------------------------
 	// body-parser is middleware that reads form data from a POST request
 	// and encodes it as a JavaScript object on `req.body`.
@@ -147,24 +165,6 @@ module.exports = function(app, config) {
 	app.use(bodyParser.json());                                          // [3]
 	app.use(bodyParser.urlencoded({ extended: true }));                  // [4]
 	app.use(cookieParser());                                             // [5]
-
-
-
-
-
-	// Setup controllers ---------------------
-	// The controller files contain the routes, routing middlewares,
-	// business logic, template rendering and dispatching.
-	// ---------------------------------------
-	// 1. Perform a synchronous glob (pattern match) search on any JavaScript
-	//    files in /app/controllers.
-	// 2. Loop through the controllers directory and require each controller
-	//    file within it, passing in the express app.
-
-	var controllers = glob.sync(config.root + '/app/controllers/*.js');  // [1]
-	controllers.forEach(function (controller) {                          // [2]
-		require(controller)(app);
-	});
 
 
 
