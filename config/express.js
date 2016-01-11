@@ -49,15 +49,17 @@ module.exports = function(app, config) {
 	// displayed safely the templates.
 	// ---------------------------------------
 	// 1. Set the directory where the template files are located.
-	// 2. Set the template engine to use nunjucks.
+	// 2. Set the template engine to use html.
 	// 3. Tell nunjucks we are using express to serve the templates within
-	//    the /app/views directory.
+	//    the /app/views and /vendor/govuk_template/views/layouts directories.
 
-	app.set('views' + '/app/views');                                     // [1]
-	app.set('view engine', 'nunjucks');                                  // [2]
-	nunjucks.configure(config.root + '/app/views', {
-		express: app                                                     // [3]
-	});
+	app.set('views' + '/app/views');                                    // [1]
+	app.set('view engine', 'html');                                     // [2]
+	nunjucks.configure( [
+		config.root + '/app/views',
+		config.root + '/vendor/govuk_template/views/layouts' ],
+		{ express: app }
+	);
 
 
 
