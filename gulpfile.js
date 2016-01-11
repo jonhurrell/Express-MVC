@@ -121,15 +121,12 @@ gulp.task('scripts', function() {
 //    to the onerror handler.
 // 4. Conditionally initialise sourcemaps (if sourceMaps == true within config).
 // 5. Pipe stream through scsslint.
-// 5. Compile using Sass, expanded style.
-// 6. Include and compile any Sass partials defined by files.nodeModules
+// 6. Compile using Sass, expanded style.
+// 7. Include and compile any Sass partials defined by files.nodeModules
 //    within config.
-// 7. Prevent styles from being duplicated if a Sass partial declares it's
+// 8. Prevent styles from being duplicated if a Sass partial declares it's
 //    own dependencies (encapsulation) using the @import directive.
-// 8. Auto-prefix (e.g. -moz-) using last 2 browser versions.
-// 9.Conditionally pipe stream through sourcemaps (if sourceMaps == true within config)
-//    and write out a source map to the directory defined by files.styleMap
-//    within config.
+// 9. Auto-prefix (e.g. -moz-) using last 2 browser versions.
 // 10.Output prefixed but non-minifed CSS to public/css
 // 11.Rename to .min.css
 // 12.Minify the CSS.
