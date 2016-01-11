@@ -35,7 +35,18 @@ module.exports = function(app, config) {
 	//	      <link rel="stylesheet" href="/css/style.min.css">
 	//    {% endif %}
 	//
+	// 2. Create a local variable and assign a request path to the assets.
+	//    The response is scoped to the request, and is only available
+	//    to the view(s) rendered during that request.
+
 	app.locals.isDevelopment = (config.env === 'development');          // [1]
+
+	app.use(function (req, res, next) {
+
+		res.locals.assetPath="/public/";                                // [2]
+		next();
+
+	});
 
 
 
