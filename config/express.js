@@ -68,7 +68,11 @@ module.exports = function(app, config) {
 	// To serve static files such as images, CSS files, and JavaScript
 	// files, we use the express.static built-in middleware function
 	// in Express.
-	app.use(express.static(config.root + '/public'));
+	// 1. Serve assets in /public directory.
+	// 2. Serve govuk assets in	/vendor/govuk_template/assets directory
+
+	app.use(express.static(config.root + '/public'));                   // [1]
+	app.use(express.static(config.root + '/vendor/govuk_template/assets'));  // [2]
 
 
 
