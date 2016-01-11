@@ -284,7 +284,7 @@ gulp.task('develop', ['build', 'watch'], function () {
 	// your node application.
 	// ---------------------------------------
 	// 1. Pass in the the app script to start/restart during the task.
-	// 2. Watch for any changes to nunjucks files in the directory.
+	// 2. Watch for any changes to html files in the directory.
 	// 3. Tell nodemon not to output to console.
 	// 4. Invoking a livereload server at the start of gulp develop task,
 	//    (before we start the nodemon child process—which starts the app.js
@@ -310,7 +310,7 @@ gulp.task('develop', ['build', 'watch'], function () {
 
 	nodemon({
 		script: 'app.js',                                          // [1]
-		ext: 'nunjucks',                                           // [2]
+		ext: 'html',                                               // [2]
 		stdout: false                                              // [3]
 	}).on(gulpif(config.autoReload, 'readable'), function () {     // [4]
 
