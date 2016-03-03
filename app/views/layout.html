@@ -1,17 +1,13 @@
 {% extends "govuk_template.html" %}
-<!doctype html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
+
+{% block head %}
+
 	<title>{{ title }}</title>
+
 	{% if isDevelopment %}
 		<link rel="stylesheet" href="/css/style.css">
 	{% else %}
 		<link rel="stylesheet" href="/css/style.min.css">
 	{% endif %}
-</head>
-<body>
-	{% block content %}{% endblock %}
-</body>
-</html>
+
+{% endblock %}
