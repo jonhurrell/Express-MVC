@@ -58,11 +58,13 @@ var config             = require('./gulp-config.json'),
 
 function errorAlert(err) {
 
-	notify.onError({title: 'Error', message: '<%= error.message %>', sound: 'Sosumi'})(err);
+	notify.onError({
+		title: 'Error', message: '<%= error.message %>', sound: 'Sosumi'
+	})(err);
 	console.log(err.toString());
 	this.emit('end');
 
-};
+}
 
 
 
@@ -250,7 +252,7 @@ gulp.task('clean', function(callback) {
 // 1. Change the base path to avoid copying top-level directory.
 
 gulp.task('copy', function() {
-	return gulp.src(config.files.copy, { base : config.copyBase }) // [1]
+	return gulp.src(config.files.copy, { base: config.copyBase })  // [1]
 		.pipe(gulp.dest(publicDirectory));
 });
 
@@ -272,16 +274,18 @@ gulp.task('copy', function() {
 gulp.task('develop', ['build', 'watch'], function () {
 
 	function exitHandler() {                                       // [1]
-		process.kill(process.pid, 'SIGINT')
-	};
+		process.kill(process.pid, 'SIGINT');
+	}
 
 	process.once('SIGINT', exitHandler);
 
-	var outputDirectory = publicDirectory + '**/*'                 // [2]
+	var outputDirectory = publicDirectory + '**/*';                // [2]
 
 	livereload.listen();                                           // [3]
 
-	gulp.watch(outputDirectory).on(gulpif(config.autoReload, 'change'), livereload.changed);  // [4]
+	gulp.watch(outputDirectory
+		).on(gulpif(config.autoReload, 'change'), livereload.changed
+	);                                                             // [4]
 
 	// Setup nodemon -------------------------
 	// nodemon will watch the files in the directory in which nodemon was
@@ -357,15 +361,19 @@ gulp.task('build', function(callback) {
 
 gulp.task('default', function() {
 
-	var cyan    = gutil.colors.cyan,
-		green   = gutil.colors.green;
+	var cyan = gutil.colors.cyan,
+		green = gutil.colors.green;
 
 	gutil.log(green('----------'));
 
 	gutil.log(('The following main ') + cyan('tasks') + (' are available:'));
 
-	gutil.log(cyan('build') + ': builds the contents to the public directory.');
-	gutil.log(cyan('develop') + ': performs an initial build then sets up watches.');
+	gutil.log(cyan('build'
+		) + ': builds the contents to the public directory.'
+	);
+	gutil.log(cyan('develop'
+		) + ': performs an initial build then sets up watches.'
+	);
 
 	gutil.log(green('----------'));
 
