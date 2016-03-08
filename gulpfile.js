@@ -237,7 +237,7 @@ gulp.task('watch', function() {
 // Deletes the /public directory
 // ---------------------------------------
 
-gulp.task('clean', function(callback) {
+gulp.task('clean', function() {
 	return del(publicDirectory);
 });
 
