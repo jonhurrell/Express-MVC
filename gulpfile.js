@@ -81,7 +81,7 @@ function errorAlert(err) {
 //    and removes standard onerror handler on errors event, which unpipes
 //    streams on error by default). Pass in our errorAlert function
 //    to the onerror handler.
-// 4. Run JSHint and report the output.
+// 4. Run ESLint and report the output.
 // 5. Combine into main.js
 // 6. Output combined but non-minified version to public/js.
 // 7. Rename to main.min.js
