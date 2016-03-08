@@ -1,0 +1,109 @@
+// http://eslint.org/docs/rules/ ---------
+// 0 - turn the rule off
+// 1 - turn the rule on as a warning (doesn't affect exit code)
+// 2 - turn the rule on as an error (exit code will be 1)
+// ---------------------------------------
+
+{
+  "extends": "eslint:recommended",
+
+  "env": {
+    "node": true,         // Node.js global variables and Node.js-specific rules.
+    "jquery": true,       // jQuery global variables.
+  },
+
+  "rules": {
+
+    // Possible errors -----------------------
+    // ---------------------------------------
+
+    "no-extra-parens": 2,         // disallow unnecessary parentheses (off by default)
+
+
+    // Best practices ------------------------
+    // ---------------------------------------
+
+    "consistent-return": 2,     // require return statements to either always or never specify values
+    "curly": [2, "multi-line"], // specify curly brace conventions for all control statements
+    "dot-notation": [2, { "allowKeywords": true }], // encourages use of dot notation whenever possible
+    "eqeqeq": 2,                // require the use of === and !==
+    "no-alert": 2,              // disallow the use of alert, confirm, and prompt
+    "no-caller": 2,             // disallow use of arguments.caller or arguments.callee
+    "no-else-return": 2,        // disallow else after a return in an if (off by default)
+    "no-eq-null": 2,            // disallow comparisons to null without a type-checking operator (off by default)
+    "no-eval": 2,               // disallow use of eval()
+    "no-extend-native": 2,      // disallow adding to native types
+    "no-extra-bind": 2,         // disallow unnecessary function binding
+    "no-fallthrough": 0,        // disallow fallthrough of case statements
+    "no-implied-eval": 2,       // disallow use of eval()-like methods
+    "no-iterator": 2,           // disallow usage of __iterator__ property
+    "no-labels": 2,             // disallow use of labeled statements
+    "no-loop-func": 2,          // disallow creation of functions within loops
+    "no-multi-spaces": 2,       // disallow use of multiple spaces
+    "no-multi-str": 2,          // disallow use of multiline strings
+    "no-native-reassign": 2,    // disallow reassignments of native objects
+    "no-new-func": 2,           // disallow use of new operator for Function object
+    "no-new-wrappers": 2,       // disallows creating new instances of String, Number, and Boolean
+    "no-new": 2,                // disallow use of new operator when not part of the assignment or comparison
+    "no-octal-escape": 2,       // disallow use of octal escape sequences in string literals, such as var foo = "Copyright \251";
+    "no-proto": 2,              // disallow usage of __proto__ property
+    "no-return-assign": 2,      // disallow use of assignment in return statement
+    "no-script-url": 2,         // disallow use of javascript: urls.
+    "no-sequences": 2,          // disallow use of comma operator
+    "no-unused-expressions": 2, // disallow usage of expressions in statement position
+    "no-with": 2,               // disallow use of the with statement
+    "yoda": [2, "never"],       // require or disallow Yoda conditions
+
+
+    // Strict mode ---------------------------
+    // ---------------------------------------
+
+    "strict": [2, "function"], // controls location of Use Strict Directives
+
+
+    // Variables -----------------------------
+    // ---------------------------------------
+
+    "no-catch-shadow": 2,             // disallow the catch clause parameter name being the same as a variable in the outer scope (off by default in the node environment)
+    "no-shadow": 2,                   // disallow declaration of variables already declared in the outer scope
+    "no-shadow-restricted-names": 2,  // disallow shadowing of names such as arguments
+    "no-undef-init": 2,               // disallow use of undefined when initializing variables
+    "no-unused-vars": [2, "all"],     // disallow declaration of variables that are not used in the code
+    "no-use-before-define": [1, "nofunc"], // disallow use of variables before they are defined
+
+
+    // Node ----------------------------------
+    // ---------------------------------------
+
+    "no-mixed-requires": [1, true], // disallow mixing regular variable and require declarations (off by default) (on by default in the node environment)
+    "no-path-concat": 2,        // disallow string concatenation with __dirname and __filename (off by default) (on by default in the node environment)
+
+
+    // Author style --------------------------
+    // ---------------------------------------
+
+    "comma-spacing": 2,             // enforce spacing before and after comma
+    "eol-last": 2,                  // enforce newline at the end of file, with no multiple empty lines
+    "key-spacing": [2, { "beforeColon": false, "afterColon": true }], // enforces spacing between keys and values in object literal properties
+    "keyword-spacing": 2,           // enforce spacing before and after keywords
+    "new-cap": 2,                   // require a capital letter for constructors
+    "new-parens": 2,                // disallow the omission of parentheses when invoking a constructor with no arguments
+    "no-array-constructor": 2,      // disallow use of the Array constructor
+    "no-lonely-if": 2,              // disallow if as the only statement in an else block (off by default)
+    "no-spaced-func": 2,            // disallow space between function identifier and application
+    "no-trailing-spaces": 2,        // disallow trailing whitespace at the end of lines
+    "no-underscore-dangle": 2,      // disallow dangling underscores in identifiers
+    "one-var": [2, "never"],        // allow just one var statement per function (off by default)
+    "semi-spacing": 2,              // enforce spacing before and after semicolons
+    "semi": 2,                      // require or disallow use of semicolons instead of ASI
+    "space-infix-ops": 2,           // require spaces around operators
+    "space-unary-ops": [2, { "words": true, "nonwords": false }], // Require or disallow spaces before/after unary operators (words on by default, nonwords off by default)
+
+
+    // Legacy --------------------------------
+    // ---------------------------------------
+
+    "max-depth": [1, 5],  // specify the maximum depth that blocks can be nested (off by default)
+    "max-len": [1, 80, 4],// specify the maximum length of a line in your program (off by default)
+  }
+}

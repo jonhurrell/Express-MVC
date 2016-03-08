@@ -20,21 +20,20 @@ var nodemon            = require('gulp-nodemon'),
 	plumber            = require('gulp-plumber'),
 	del                = require('del'),
 	runsequence        = require('run-sequence'),
-	stylish            = require('jshint-stylish'),
 	importOnce         = require('node-sass-import-once');
 
 // Plugin requires.
 
 var concat             = require('gulp-concat'),
+	eslint             = require('gulp-eslint'),
 	uglify             = require('gulp-uglify'),
-	jshint             = require('gulp-jshint'),
 	rename             = require('gulp-rename'),
 	sass               = require('gulp-sass'),
 	autoprefixer       = require('gulp-autoprefixer'),
 	nano               = require('gulp-cssnano'),
 	sourcemaps         = require('gulp-sourcemaps'),
 	livereload         = require('gulp-livereload'),
-	scsslint           = require('gulp-scss-lint'),
+	sasslint           = require('gulp-sass-lint'),
 	imagemin           = require('gulp-imagemin'),
 	newer              = require('gulp-newer'),
 	notify             = require('gulp-notify');
@@ -59,11 +58,13 @@ var config             = require('./gulp-config.json'),
 
 function errorAlert(err) {
 
-	notify.onError({title: 'Error', message: '<%= error.message %>', sound: 'Sosumi'})(err);
+	notify.onError({
+		title: 'Error', message: '<%= error.message %>', sound: 'Sosumi'
+	})(err);
 	console.log(err.toString());
 	this.emit('end');
 
-};
+}
 
 
 
@@ -93,11 +94,12 @@ gulp.task('scripts', function() {
 
 	return gulp.src(config.files.scripts)                          // [2]
 		.pipe(plumber({errorHandler: errorAlert}))                 // [3]
-		.pipe((jshint()))                                          // [4]
-		.pipe((jshint.reporter(stylish)))
+		.pipe(eslint())                                            // [4]
+		.pipe(eslint.format())
+		.pipe(eslint.failAfterError())
 		.pipe(concat('main.js'))                                   // [5]
 		.pipe(gulp.dest(outputDirectory))                          // [6]
-		.pipe(rename({ suffix : '.min' }))                         // [7]
+		.pipe(rename({ suffix: '.min' }))                          // [7]
 		.pipe(uglify())                                            // [8}
 		.pipe(gulp.dest(outputDirectory));                         // [9]
 
@@ -120,14 +122,14 @@ gulp.task('scripts', function() {
 //    streams on error by default). Pass in our errorAlert function
 //    to the onerror handler.
 // 4. Conditionally initialise sourcemaps (if sourceMaps == true within config).
-// 5. Pipe stream through scsslint.
+// 5. Pipe stream through sasslint.
 // 5. Compile using Sass, expanded style.
 // 6. Include and compile any Sass partials defined by files.nodeModules
 //    within config.
 // 7. Prevent styles from being duplicated if a Sass partial declares it's
 //    own dependencies (encapsulation) using the @import directive.
 // 8. Auto-prefix (e.g. -moz-) using last 2 browser versions.
-// 9.Conditionally pipe stream through sourcemaps (if sourceMaps == true within config)
+// 9. Conditionally pipe stream through sourcemaps (if sourceMaps == true within config)
 //    and write out a source map to the directory defined by files.styleMap
 //    within config.
 // 10.Output prefixed but non-minifed CSS to public/css
@@ -146,19 +148,24 @@ gulp.task('styles', function() {
 	return gulp.src(config.files.styles)                           // [2]
 		.pipe(plumber({errorHandler: errorAlert}))                 // [3]
 		.pipe(gulpif(config.sourceMaps, sourcemaps.init()))        // [4]
-		.pipe(scsslint({                                           // [5]
-			'config': '.scss-lint.yml'
- 		}))
+		.pipe(sasslint({                                           // [5]
+			'config': '.sass-lint.yml'
+		}))
+		.pipe(sasslint.format())
+		.pipe(sasslint.failOnError())
 		.pipe(sass({                                               // [6]
-			style : 'expanded',
+			style: 'expanded',
 			includePaths: [config.files.nodeModules],              // [7]
 			importer: importOnce                                   // [8]
 		}))
 		.pipe(autoprefixer('last 2 versions'))                     // [9]
 		.pipe(gulp.dest(outputDirectory))                          // [10]
-		.pipe(rename({ suffix : '.min' }))                         // [11]
+		.pipe(rename({ suffix: '.min' }))                          // [11]
 		.pipe(nano())                                              // [12]
-		.pipe(gulpif(config.sourceMaps, sourcemaps.write(config.files.stylesMap)))  // [13]
+		.pipe(gulpif(
+			config.sourceMaps, sourcemaps.write(
+			config.files.stylesMap
+		)))                                                        // [13]
 		.pipe(gulp.dest(outputDirectory));                         // [14]
 
 });
@@ -190,9 +197,9 @@ gulp.task('images', function() {
 	return gulp.src(config.files.images)                           // [2]
 		.pipe(plumber({errorHandler: errorAlert}))                 // [3]
 		.pipe(gulpif(config.minifyImages, imagemin({               // [4]
-			optimizationLevel : 3,
-			progressive : true,
-			interlaced : true
+			optimizationLevel: 3,
+			progressive: true,
+			interlaced: true
 		})))
 		.pipe(newer(outputDirectory))                              // [5]
 		.pipe(gulp.dest(outputDirectory));                         // [6]
@@ -230,7 +237,7 @@ gulp.task('watch', function() {
 // Deletes the /public directory
 // ---------------------------------------
 
-gulp.task('clean', function(callback) {
+gulp.task('clean', function() {
 	return del(publicDirectory);
 });
 
@@ -245,7 +252,7 @@ gulp.task('clean', function(callback) {
 // 1. Change the base path to avoid copying top-level directory.
 
 gulp.task('copy', function() {
-	return gulp.src(config.files.copy, { base : config.copyBase }) // [1]
+	return gulp.src(config.files.copy, { base: config.copyBase })  // [1]
 		.pipe(gulp.dest(publicDirectory));
 });
 
@@ -267,16 +274,18 @@ gulp.task('copy', function() {
 gulp.task('develop', ['build', 'watch'], function () {
 
 	function exitHandler() {                                       // [1]
-		process.kill(process.pid, 'SIGINT')
-	};
+		process.kill(process.pid, 'SIGINT');
+	}
 
 	process.once('SIGINT', exitHandler);
 
-	var outputDirectory = publicDirectory + '**/*'                 // [2]
+	var outputDirectory = publicDirectory + '**/*';                // [2]
 
 	livereload.listen();                                           // [3]
 
-	gulp.watch(outputDirectory).on(gulpif(config.autoReload, 'change'), livereload.changed);  // [4]
+	gulp.watch(outputDirectory
+		).on(gulpif(config.autoReload, 'change'), livereload.changed
+	);                                                             // [4]
 
 	// Setup nodemon -------------------------
 	// nodemon will watch the files in the directory in which nodemon was
@@ -352,15 +361,19 @@ gulp.task('build', function(callback) {
 
 gulp.task('default', function() {
 
-	var cyan    = gutil.colors.cyan,
-		green   = gutil.colors.green;
+	var cyan = gutil.colors.cyan,
+		green = gutil.colors.green;
 
 	gutil.log(green('----------'));
 
 	gutil.log(('The following main ') + cyan('tasks') + (' are available:'));
 
-	gutil.log(cyan('build') + ': builds the contents to the public directory.');
-	gutil.log(cyan('develop') + ': performs an initial build then sets up watches.');
+	gutil.log(cyan('build'
+		) + ': builds the contents to the public directory.'
+	);
+	gutil.log(cyan('develop'
+		) + ': performs an initial build then sets up watches.'
+	);
 
 	gutil.log(green('----------'));
 
